@@ -1,0 +1,13 @@
+---
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: harve
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: harve
+    restart: always
