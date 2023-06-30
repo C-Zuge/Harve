@@ -1,0 +1,91 @@
+Acessar o site da AWS
+Criar uma conta com seu email e cartao de credito
+Acessar o painel EC2
+Criar uma instancia Ubuntu 22.04 LTS
+Criar par de chave RSA e certificado .pem
+
+Abrir vs Code
+Instalar Remote SSH
+Criar um json com os dados da conexao ssh e o certificado
+	Host harve-server
+		User ubuntu
+		HostName <IPv4 publico AWS>
+		IdentityFile <Caminho para arquivo .pem>
+Conectar via remote ssh com a maquina
+
+Atualizar ferramentas Linux e do Modulo
+	sudo apt update -y
+	sudo apt-get upgrade -y
+	sudo apt install python3-pip sqlite3 python3.10-venv -y
+
+Criar um ambiente vritual
+	python3 -m venv <nome_do_ambientevirtual>
+	source <path_to_venv>/venv-harve/bin/activate
+
+Configurando Airflow
+	Acessar o ambiente virtual
+	sudo apt-get install libpq-dev -y
+	
+	pip install "apache-airflow[postgres]==2.5.0" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.5.0/constraints-3.10.txt"
+	airflow db init
+	
+	sudo apt-get install postgresql postgresql-contrib -y
+	sudo -i -u postgres
+	psql
+	CREATE DATABASE airflow; CREATE USER airflow WITH PASSWORD 'airflow'; GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
+	
+	sed -i 's#sqlite:////home/ubuntu/airflow/airflow.db#postgresql+psycopg2://airflow:airflow@localhost/airflow#g' airflow.cfg
+	grep sql_alchemy airflow.cfg
+	grep executor airflow.cfg
+	sed -i 's#SequentialExecutor#LocalExecutor#g' airflow.cfg
+	
+	airflow db init
+	airflow users create -u airflow -f airflow -l airflow -r Admin -e airflow@gmail.com
+		create password: airflow
+	airflow users list # Ver os usuarios criados
+	
+	Caso esqueca o nome do embiente virtual:
+		sudo apt install plocate
+		locate -b '\activate' | grep "/home"
+
+Abrindo porta 8080 da maquina EC2
+	Entrar em instancias do EC2
+	Abrir maquina virtual desejada 
+	Ir em Seguranca (Aba)
+	Clicar em Grupos de seguranca
+	Clicar em editar regras de entrada
+	Adicionar regra:
+		TCP Personalizado (Custom TCP)
+		8080 (intervalo de portas)
+		Qualquer IPV4 (Origem)
+	Salvar regras
+
+Rodar Airflow webserver 
+	airflow webserver &
+	airflow scheduler
+
+Gerar chaves SSH
+	ssh-keygen
+		nao colocar senha
+		salvar em /home/ubuntu/.ssh
+
+Baixar docker-install
+	curl -LfO https://raw.githubusercontent.com/C-Zuge/Harve/main/Usefull_Files/docker_install.sh
+	sudo apt install docker-compose
+
+Executar o arquivo baixado
+	chmod +x docker_install.sh
+	sudo ./docker-install.sh
+	
+docker-compose ps
+	
+Baixar imagem airflow
+	curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.5.3/docker-compose.yaml'
+
+Criar Instancia Metabase 
+	https://www.metabase.com/docs/latest/installation-and-operation/running-metabase-on-docker
+
+
+
+
+	
